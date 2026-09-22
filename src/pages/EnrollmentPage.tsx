@@ -1,26 +1,48 @@
 import { CourseCard } from "@/components/course-card";
 import { RegisterDialog } from "@/components/register-dialog";
-import { courses, currentStudent } from "@/lib/mock-data";
+import { courses, CURRENT_STUDENT_ID, currentStudent, enrollments } from "@/lib/mock-data";
+import type { Enrollment } from "@/lib/types";
+import { useState } from "react";
+//import type { Course } from "@/lib/types";
+//import { useState } from "react";
+
 
 export default function Enrollent() {
+  const temp = enrollments.filter(e => e.studentId == CURRENT_STUDENT_ID)
+  const [list, setCourse] = useState<Enrollment[]>(temp);
+  function handleAdd(course: Enrollment) {
+    setCourse(p => [...p, course])
+    enrollments.push(course)
+  }
+  function handleDelete(courseId: string) {
+    setCourse(list.filter(c => c.courseId != courseId))
+    const index = enrollments.findIndex(e => e.courseId == courseId);
+    enrollments.splice(index, 1)
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold">รายวิชาทั้งหมด</h1>
-          <RegisterDialog />
+          <div className="text-sm text-muted-foreground">{currentStudent.firstName + " " + currentStudent.lastName} ({CURRENT_STUDENT_ID})</div>
         </div>
+        <RegisterDialog onAdd={handleAdd} />
       </div>
 
       <div className="flex flex-col gap-4">
-        {courses.map((course) => (
-          <CourseCard
-            key={course.courseId}
-            course={course}
-            student={currentStudent}
-            enrolledAt={course.courseId}
-          />
-        ))}
+        {
+          courses.map((course) => (
+            <CourseCard
+              key={course.courseId}
+              course={course}
+              student={currentStudent}
+              enrolled={list.findIndex(e => course.courseId == e.courseId) != -1}
+              enrolledAt={course.courseId}
+              deleteCourse={handleDelete}
+            />
+          ))
+        }
       </div>
     </div>
   );
