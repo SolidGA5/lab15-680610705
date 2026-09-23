@@ -113,7 +113,10 @@ export function RegisterDialog({ onAdd }: cardProp) {
             <DialogDescription>กรอกข้อมูลเพื่อลงทะเบียน</DialogDescription>
           </DialogHeader>
           <div>
-            <Select onValueChange={setCourseId} onOpenChange={updateOnDelete}>
+            <Select
+              onValueChange={() => setCourseId}
+              onOpenChange={updateOnDelete}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue
                   className="w-0"
