@@ -24,7 +24,14 @@ export default function RootLayout() {
         </header>
         <main className="flex-1 p-4">
           <Outlet />
+          <div className="h-3"></div>
+          <p className="text-center text-xs text-muted-foreground">
+            จัดทำโดย Phuphing Chompubang รหัสนักศึกษา 680610705
+          </p>
         </main>
+        <footer className="border-t p-4 text-center text-xs text-muted-foreground">
+          จัดทำโดย Phuphing Chompubang รหัสนักศึกษา 680610705
+        </footer>
       </SidebarInset>
     </SidebarProvider>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,41 +19,84 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { courses, CURRENT_STUDENT_ID, currentStudent, enrollments } from "@/lib/mock-data";
+} from "@/components/ui/select";
+import {
+  courses,
+  CURRENT_STUDENT_ID,
+  currentStudent,
+  enrollments,
+} from "@/lib/mock-data";
 import type { Course, Enrollment } from "@/lib/types";
 
 type cardProp = {
-  onAdd: (todo: Enrollment) => void
-}
+  onAdd: (todo: Enrollment) => void;
+};
 
 export function RegisterDialog({ onAdd }: cardProp) {
   const [open, setOpen] = useState(false); // true = แสดง Dialog
   const [courseId, setCourseId] = useState("");
-  const [studentId, setStudentId] = useState("");
-  const [time, setTime] = useState("");
-  const [unEnrolled, setUnErolled] = useState<Course[]>(findUnEnrolled())
+  const [time, setTime] = useState(() => {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  });
+
+  function remake(t: string) {
+    const [hours, minutes] = t.split(":").map(Number);
+    const now = new Date();
+    now.setHours(hours, minutes, 0, 0);
+    setHoldTime(
+      new Intl.DateTimeFormat("th-TH", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+      }).format(now),
+    );
+  }
+
+  const [holdTime, setHoldTime] = useState(() => {
+    const [hours, minutes] = time.split(":").map(Number);
+    const now = new Date();
+    now.setHours(hours, minutes, 0, 0);
+
+    return new Intl.DateTimeFormat("th-TH", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    }).format(now);
+  });
+  const [unEnrolled, setUnErolled] = useState<Course[]>(findUnEnrolled());
+  function handleTime(t: string) {
+    setTime(t);
+    remake(t);
+  }
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault(); // ไม่ให้หน้าเว็บ reload
     const [id] = courseId.split(" - ");
     const newEnrollment: Enrollment = {
       courseId: id,
       studentId: CURRENT_STUDENT_ID,
-      enrolledAt: time
+      enrolledAt: holdTime,
     };
-    onAdd(newEnrollment)
+    onAdd(newEnrollment);
     setCourseId(""); // เคลียร์ฟอร์ม
     setOpen(false); // ปิด Dialog
   }
 
   function updateOnDelete() {
-    setUnErolled(findUnEnrolled())
+    setUnErolled(findUnEnrolled());
   }
 
-
   function findUnEnrolled() {
-    const student = enrollments.filter(e => e.studentId == CURRENT_STUDENT_ID)
-    return courses.filter(c => student.findIndex(s => s.courseId == c.courseId) == -1)
+    const student = enrollments.filter(
+      (e) => e.studentId == CURRENT_STUDENT_ID,
+    );
+    return courses.filter(
+      (c) => student.findIndex((s) => s.courseId == c.courseId) == -1,
+    );
   }
 
   return (
@@ -73,17 +116,21 @@ export function RegisterDialog({ onAdd }: cardProp) {
           <div>
             <Select onValueChange={setCourseId} onOpenChange={updateOnDelete}>
               <SelectTrigger className="w-full">
-                <SelectValue className="w-0" placeholder="เลือกวิชา" >
-                </SelectValue>
+                <SelectValue
+                  className="w-0"
+                  placeholder="เลือกวิชา"
+                ></SelectValue>
               </SelectTrigger>
               <SelectContent className="h-auto">
                 <SelectGroup>
-                  {unEnrolled.map(c => (
+                  {unEnrolled.map((c) => (
                     <SelectItem
                       key={c.courseId}
                       value={c.courseId + " - " + c.courseTitle}
                     >
-                      <span className="whitespace-normal">{c.courseId + " - " + c.courseTitle}</span>
+                      <span className="whitespace-normal">
+                        {c.courseId + " - " + c.courseTitle}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -93,24 +140,46 @@ export function RegisterDialog({ onAdd }: cardProp) {
 
           <div className="space-y-2">
             <Label htmlFor="studentId">เวลา</Label>
-            <Input id="studentId" value={Date.now.toString()} placeholder="เช่น 650610002" />
+            <Input
+              type="time"
+              id="time"
+              value={time}
+              onChange={(e) => handleTime(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="fullName">ชื่อ-นามสกุล</Label>
-            <Input id="fullName" value={currentStudent.firstName + " " + currentStudent.lastName} />
+            <Input
+              readOnly={true}
+              id="fullName"
+              value={currentStudent.firstName + " " + currentStudent.lastName}
+            />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="courseId">โปรแกรม</Label>
-            <Input id="courseId" value={currentStudent.program} />
+            <Input
+              id="courseId"
+              readOnly={true}
+              value={currentStudent.program}
+            />
           </div>
 
           <DialogFooter>
-            <Button type="submit" onClick={() => handleSubmit}>ยืนยัน</Button>
+            <Button
+              disabled={
+                enrollments.filter((e) => e.studentId == CURRENT_STUDENT_ID)
+                  .length == 3
+              }
+              type="submit"
+              onClick={() => handleSubmit}
+            >
+              ยืนยัน
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
-    </Dialog >
+    </Dialog>
   );
 }
