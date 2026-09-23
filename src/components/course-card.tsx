@@ -1,15 +1,14 @@
-import type { Course, Enrollment, Student } from "@/lib/types";
+import type { Course, Student } from "@/lib/types";
 import {
   Card,
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@base-ui/react";
+import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 type CourseCardProps = {
   course: Course;

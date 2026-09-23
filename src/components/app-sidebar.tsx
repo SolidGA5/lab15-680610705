@@ -1,4 +1,4 @@
-import { BookOpen, Calendar, Home, Settings } from "lucide-react";
+import { BookOpen, Home } from "lucide-react";
 import { Link, useLocation } from "react-router";
 
 import {
@@ -14,11 +14,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-import {
-  Avatar,
-  AvatarFallback, AvatarImage,
-} from "@/components/ui/avatar"
-import { currentStudent, currentUser } from "@/lib/mock-data";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { currentUser } from "@/lib/mock-data";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 
