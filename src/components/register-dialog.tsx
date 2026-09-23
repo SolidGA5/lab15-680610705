@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -102,7 +103,7 @@ export function RegisterDialog({ onAdd }: cardProp) {
     <Dialog open={open} onOpenChange={setOpen}>
       {/* ปุ่มที่กดแล้วเปิด Dialog */}
       <DialogTrigger>
-        <Button>ลงทะเบียน</Button>
+        <Button>{<UserPlus className="h-4 w-4" />}ลงทะเบียน</Button>
       </DialogTrigger>
 
       {/* ฟอร์มที่แสดงออกมาเมื่อกดปุ่ม */}
@@ -177,7 +178,7 @@ export function RegisterDialog({ onAdd }: cardProp) {
               type="submit"
               onClick={() => handleSubmit}
             >
-              ยืนยัน
+              ยืนยันการลงทะเบียน
             </Button>
           </DialogFooter>
         </form>
